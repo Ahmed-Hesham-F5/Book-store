@@ -29,8 +29,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('addOrUpdatePersonalData', UserController::class .'@addOrUpdatePersonalData');
     Route::get('getPersonalData', UserController::class .'@getPersonalData');
 
-    Route::group(['prefix'=> 'admin'], function () { 
-
+    Route::group(['prefix'=> 'admin',"middleware"=> 'isAdmin'], function () { 
+         Route::get('hello', function () {
+            return response()->json(['message' => 'Hello Admin!'], 200);
+          });  
     });
    
 });
