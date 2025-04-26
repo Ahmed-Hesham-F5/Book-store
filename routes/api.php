@@ -5,6 +5,9 @@ use App\Http\Controllers\ShopingCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MainAdminController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,7 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('/register', UserController::class . '@register');
-Route::post('/login', UserController::class . '@login');
+Route::post('/login', UserController::class . '@login')->middleware('IsNotBanned');
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     //Route::post('/logout', UserController::class . '@logout');
@@ -40,11 +43,26 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
    
    Route::delete('deleteBookFromShopingCart',ShopingCart::class . '@deleteBookFromShopingCart');
    
-    Route::group(['prefix'=> 'admin',"middleware"=> 'isAdmin'], function () { 
+    Route::group(['prefix'=> 'admin',"middleware"=> ['isAdmin','IsNotBanned']], function () { 
          Route::get('hello', function () {
             return response()->json(['message' => 'Hello Admin!'], 200);
           });  
+
+        Route::get('getAllUsers', AdminController::class .'@getAllUsers');
+        Route::post('banUser', AdminController::class .'@banUser');
+        Route::post('unbanUser', AdminController::class .'@unbanUser');
     });
+    Route::group(['prefix'=> 'Mainadmin',"middleware"=> 'IsMainAdmin'], function () { 
+        Route::get('hello', function () {
+           return response()->json(['message' => 'Hello main Admin!'], 200);
+         });  
+
+       Route::get('getAllUsers', MainAdminController::class .'@getAllUsers');
+       Route::post('banUser', MainAdminController::class .'@banUser');
+       Route::post('unbanUser', MainAdminController::class .'@unbanUser');
+
+       Route::post('createAdmin', MainAdminController::class .'@createAdmin');
+   });
    
 });
 

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class isAdmin
+class IsNotBanned
 {
     /**
      * Handle an incoming request.
@@ -15,8 +15,7 @@ class isAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if the user is authenticated
-        if (!auth()->check()||(!$request->user()->isAdmin && !$request->user()->is_main_admin)) { 
+        if (!auth()->check()||$request->user()->is_Banned) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $next($request);
