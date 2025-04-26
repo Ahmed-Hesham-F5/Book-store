@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BooksController;
+use App\Http\Controllers\ShopingCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -29,6 +31,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('addOrUpdatePersonalData', UserController::class .'@addOrUpdatePersonalData');
     Route::get('getPersonalData', UserController::class .'@getPersonalData');
 
+    Route::get('getAllBooks', BooksController::class .'@getAllBooks');
+    
+    Route::get('getOrCreateShopingCart',ShopingCart::class . '@getOrCreateShopingCart');
+    Route::post('addBookToShopingCart',ShopingCart::class . '@addBookToShopingCart');
+    /// cant be put
+    Route::post('updateBookQuantityInShopingCart',ShopingCart::class . '@updateBookQuantityInShopingCart');
+   
+   Route::delete('deleteBookFromShopingCart',ShopingCart::class . '@deleteBookFromShopingCart');
+   
     Route::group(['prefix'=> 'admin',"middleware"=> 'isAdmin'], function () { 
          Route::get('hello', function () {
             return response()->json(['message' => 'Hello Admin!'], 200);

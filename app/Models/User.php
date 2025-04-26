@@ -47,4 +47,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(PersonalData::class);
     }
+    public function shopingCart(){
+        return $this->hasOne(ShopingCart::class);
+    }
 }
