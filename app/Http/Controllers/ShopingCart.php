@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use Illuminate\Http\Request;
 
+use function Psy\sh;
+
 class ShopingCart extends Controller
 {
     //
@@ -89,6 +91,47 @@ class ShopingCart extends Controller
                 $book = Book::findOrFail($request->input('book_id'));
                 $shopingCart->book()->detach($book->id);
                 return response()->json(['message' => 'Book removed from shopping cart'], 200);
+            } else {
+                return response()->json(['error' => 'Shopping cart not found'], 404);
+            }
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
+    public function checkout(Request $request)
+    {
+        $user = auth()->user();
+        if ($user) {
+            // if(!$user instanceof User) {
+            //     throw new \RuntimeException('Authenticated user is not a User model.');
+            // }
+            $shopingCart = $user->shopingCart;
+            if ($shopingCart) {
+               $booksinShopingcart = $shopingCart->book()->get();
+            // //    return response()->json($booksinShopingcart, 200);
+               $isOk=True;
+
+               foreach ($booksinShopingcart as $book) {
+                    //$shopingCart->book()->detach($book->id);
+                    if($book->Quantity < $book->pivot->quantity){
+                        $isOk=False;
+                     //  return response()->json($book->pivot->quantity, 200);
+                       break;  
+                   }
+                }
+                if($isOk){
+                    foreach ($booksinShopingcart as $book) {
+                        $book->Quantity -= $book->pivot->quantity;
+                        $book->save();
+                        $shopingCart->book()->detach($book->id);
+                    
+                    }
+                    return response()->json(['message' => 'All books purchased successfully'], 200);
+                }else{
+                    return response()->json(['error' => 'Not enough books in stock'], 404);
+                }
+
+
             } else {
                 return response()->json(['error' => 'Shopping cart not found'], 404);
             }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MainAdminController;
+use App\Models\Book;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,15 +36,17 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getPersonalData', UserController::class .'@getPersonalData');
 
     Route::get('getAllBooks', BooksController::class .'@getAllBooks');
-    
+    Route::get('/getBook/{bookId}', BooksController::class .'@getBook');
     Route::get('getOrCreateShopingCart',ShopingCart::class . '@getOrCreateShopingCart');
     Route::post('addBookToShopingCart',ShopingCart::class . '@addBookToShopingCart');
     /// cant be put
     Route::post('updateBookQuantityInShopingCart',ShopingCart::class . '@updateBookQuantityInShopingCart');
    
    Route::delete('deleteBookFromShopingCart',ShopingCart::class . '@deleteBookFromShopingCart');
+   Route::post('checkout',ShopingCart::class . '@checkout');
    
-    Route::group(['prefix'=> 'admin',"middleware"=> ['isAdmin','IsNotBanned']], function () { 
+   
+  Route::group(['prefix'=> 'admin',"middleware"=> ['isAdmin','IsNotBanned']], function () { 
          Route::get('hello', function () {
             return response()->json(['message' => 'Hello Admin!'], 200);
           });  
@@ -51,6 +54,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('getAllUsers', AdminController::class .'@getAllUsers');
         Route::post('banUser', AdminController::class .'@banUser');
         Route::post('unbanUser', AdminController::class .'@unbanUser');
+        Route::post('addBook', BooksController::class .'@addBook');
     });
     Route::group(['prefix'=> 'Mainadmin',"middleware"=> 'IsMainAdmin'], function () { 
         Route::get('hello', function () {

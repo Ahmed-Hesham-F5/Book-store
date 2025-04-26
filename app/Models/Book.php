@@ -13,6 +13,7 @@ class Book extends Model
 
     protected $fillable = [
         'BookID',
+        'Title',
         'price',
         'Description',
         'ImgSrc', 
